@@ -241,23 +241,23 @@ jobs:
           FASTLANE_KEY: ${{ secrets.FASTLANE_KEY }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
 
-      # Upload to TestFlight
-      - name: Fastlane upload to TestFlight
-        run: bundle exec fastlane release
-        env:
-          TEAMID: ${{ secrets.TEAMID }}
-          GH_PAT: ${{ secrets.GH_PAT }}
-          FASTLANE_KEY_ID: ${{ secrets.FASTLANE_KEY_ID }}
-          FASTLANE_ISSUER_ID: ${{ secrets.FASTLANE_ISSUER_ID }}
-          FASTLANE_KEY: ${{ secrets.FASTLANE_KEY }}
-          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-
+      # 新增：云端仅编译，生成无签名归档包
+      - name: Xcode 编译生成无签名归档包
+        run: |
+          mkdir -p artifacts
+          xcodebuild archive \
+          -workspace Loop.xcworkspace \
+          -scheme Loop \
+          -configuration Release \
+          -archivePath artifacts/Loop.xcarchive
+                     
+      # 下方上传产物代码完全保留不动
       # Upload Build artifacts
-      - name: Upload build log, IPA and Symbol artifacts
+      - name: Upload build log, IPA and Symbol artifact
         if: always()
         uses: actions/upload-artifact@v6
-        with:
-          name: build-artifacts
-          path: |
-            artifacts
-            buildlog
+        with:                                                          
+         name: build-artifacts
+         path: |
+           artifacts
+           buildlog
