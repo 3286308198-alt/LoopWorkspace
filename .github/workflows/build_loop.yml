@@ -226,38 +226,31 @@ jobs:
       - name: Install Project Dependencies
         run: bundle install
 
-      # Sync the GitHub runner clock with the Windows time server (workaround as suggested in https://github.com/actions/runner/issues/2996)
+      # Sync the GitHub runner clock with the Windows
       - name: Sync clock
         run: sudo sntp -sS time.windows.com
 
-      # Build signed Loop IPA file
-      - name: Fastlane Build & Archive
-        run: bundle exec fastlane build_loop
-        env:
-          TEAMID: ${{ secrets.TEAMID }}
-          GH_PAT: ${{ secrets.GH_PAT }}
-          FASTLANE_KEY_ID: ${{ secrets.FASTLANE_KEY_ID }}
-          FASTLANE_ISSUER_ID: ${{ secrets.FASTLANE_ISSUER_ID }}
-          FASTLANE_KEY: ${{ secrets.FASTLANE_KEY }}
-          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      # ------------------- 整段Fastlane打包全部注释屏蔽 -------------------
+      # # Build signed Loop IPA file
+      # - name: Fastlane Build & Archive
+      #   run: bundle exec fastlane build_loop
+      #   env:
+      #     TEAMID: ${{ secrets.TEAMID }}
+      #     GH_PAT: ${{ secrets.GH_PAT }}
+      #     FASTLANE_KEY_ID: ${{ secrets.FASTLANE_KEY_ID }}
+      #     FASTLANE_ISSUER_ID: ${{ secrets.FASTLANE_ISSUER_ID }}
+      #     FASTLANE_KEY: ${{ secrets.FASTLANE_KEY }}
+      #     MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
 
       # 新增：云端仅编译，生成无签名归档包
       - name: Xcode 编译生成无签名归档包
         run: |
-          mkdir -p artifacts
-          xcodebuild archive \
-          -workspace Loop.xcworkspace \
-          -scheme Loop \
-          -configuration Release \
-          -archivePath artifacts/Loop.xcarchive
-                     
-      # 下方上传产物代码完全保留不动
-      # Upload Build artifacts
-      - name: Upload build log, IPA and Symbol artifact
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:                                                          
-         name: build-artifacts
-         path: |
-           artifacts
-           buildlog
+            mkdir -p artifacts
+            xcodebuild archive \
+            -workspace Loop.xcworkspace \
+            -scheme Loop \
+            -configuration Release \
+            -archivePath artifacts/Loop.xcarchive
+            # 下方上传产物代码完全保留不动
+            # Upload Build artifacts
+             - name: Upload build log, IPA and Symbol artifact
